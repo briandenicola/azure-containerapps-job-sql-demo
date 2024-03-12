@@ -3,7 +3,15 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
-# Terraform 
+# Terraform
+app/.terraform/
+app/.terraform.tfstate.lock.info
+app/.terraform.lock.hcl
+app/terraform.tfstate
+app/terraform.tfstate.backup
+app/variables.tfvars
+app/terraform.tfstate.d/
+
 infrastructure/.terraform/
 infrastructure/.terraform.tfstate.lock.info
 infrastructure/.terraform.lock.hcl
