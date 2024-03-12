@@ -16,39 +16,36 @@ tasks:
   apply: 
     cmds:
     - terraform -chdir=./infrastructure apply -auto-approve -var "region={{.REGION}}"
-    - task: creds
     vars:
       REGION: '{{default "southcentralus" .CLI_ARGS}}'
-  
-  # creds:
-  #   desc: Gets credential file for newly created AKS cluster
-  #   cmds:
-  #   - az aks get-credentials -g {{.RG}} -n {{.AKS}} --overwrite-existing
-  #   - kubelogin convert-kubeconfig -l azurecli
-  #   vars:
-  #     RG: 
-  #       sh: terraform -chdir=./infrastructure output -raw APP_RESOURCE_GROUP
-  #     AKS: 
-  #       sh: terraform -chdir=./infrastructure output -raw AKS_CLUSTER_NAME
 
-  #build:
-  #  desc: Builds application code with Docker
-  #  cmds:
-  #  - docker build -f src/dockerfile src/
-  #  vars:
+  build:
+    desc: Builds application code with Docker
+    cmds:
+    - az acr login -n {{.ACR_NAME}}
+    - az acr build -t sql-job:{{.COMMIT_HASH}} -r {{.ACR_NAME}} src/.
+    vars:
+      ACR_NAME: 
+        sh: terraform -chdir=./infrastructure output -raw ACR_NAME
+      COMMIT_HASH:
+        sh: git rev-parse HEAD | head -c 8
 
-  #deploy:
-  #  desc: Deploys application code via helm
-  #  cmds:
-  #  - helm upgrade -i app deploy/.
-  #  vars:
+  deploy: 
+    cmds:
+    - terraform -chdir=./app workspace new {{.APP_NAME}} || true
+    - terraform -chdir=./app workspace select {{.APP_NAME}}
+    - terraform -chdir=./app init
+    - terraform -chdir=./app apply -auto-approve -var "app_name={{.APP_NAME}}"  -var "commit={{.COMMIT_HASH}}"
+    vars:
+      APP_NAME: 
+        sh: terraform -chdir=./infrastructure output -raw APP_NAME
+      COMMIT_HASH:
+        sh: git rev-parse HEAD | head -c 8
 
   down:
-    desc: Destroys Azure infrastructure and cleans up terraform state files
+    desc: Destroys all Azure resources and cleans up Terraform
     cmds:
-    - cd infrastructure ;
-      rm -rf terraform.tfstate.d .terraform.lock.hcl .terraform terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info
-    - az group delete -n {{.RG}} --yes --no-wait || true
-    vars:
-      RG: 
-        sh: terraform -chdir=./infrastructure output -raw APP_RESOURCE_GROUP
+    - az group list --tag Application="Azure Container Apps Job Demo with Azure SQL" --query "[].name" -o tsv | xargs -ot -n 1 az group delete -y --no-wait -n
+    - cd ./app; rm -rf terraform.tfstate.d .terraform.lock.hcl .terraform terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info
+    - cd ./infrastructure; rm -rf terraform.tfstate.d .terraform.lock.hcl .terraform terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info
+
