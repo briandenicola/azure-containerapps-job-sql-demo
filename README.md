@@ -17,7 +17,7 @@ SQL Job App | A docker image with a PowerShell wrapper script that executes a si
 Utils App | A docker image with common utilities for troubleshooting
 
 ## Architecture Diagram
-TBD
+![Architecture](.assets/containerapps-jobs.png)
 
 ## Azure Infrastructure Setup 
 
