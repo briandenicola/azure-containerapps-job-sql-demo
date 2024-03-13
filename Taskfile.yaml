@@ -31,6 +31,7 @@ tasks:
         sh: git rev-parse HEAD | head -c 8
 
   deploy: 
+    desc: Deploy SQL job app to Container Apps Environment
     cmds:
     - terraform -chdir=./app workspace new {{.APP_NAME}} || true
     - terraform -chdir=./app workspace select {{.APP_NAME}}
@@ -41,6 +42,24 @@ tasks:
         sh: terraform -chdir=./infrastructure output -raw APP_NAME
       COMMIT_HASH:
         sh: git rev-parse HEAD | head -c 8
+
+  validate:
+    desc: Executes the job and displays the logs
+    cmds:
+    - az containerapp job start -g {{.RG}} --name {{.APP_NAME}}-sqljob -o table
+    - echo "Sleeping for 1 minute…"
+    - sleep 60s
+    - az containerapp job execution list -g {{.RG}} -n {{.APP_NAME}}-sqljob -o table
+    - echo "Sleeping for 5 minutes…"
+    - sleep 300s
+    - az monitor log-analytics query -w {{.LAW_ID}} --analytics-query "ContainerAppConsoleLogs | where ContainerGroupName startswith '{{.APP_NAME}}-sqljob' | project TimeGenerated, ContainerName, ContainerImage, Log" -o table
+    vars:
+      RG: 
+        sh: terraform -chdir=./infrastructure output -raw RESOURCE_GROUP
+      APP_NAME: 
+        sh: terraform -chdir=./infrastructure output -raw APP_NAME 
+      LAW_ID:
+        sh: terraform -chdir=./infrastructure output -raw LAW_ID
 
   down:
     desc: Destroys all Azure resources and cleans up Terraform

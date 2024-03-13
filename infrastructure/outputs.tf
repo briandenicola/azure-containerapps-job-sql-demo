@@ -12,3 +12,8 @@ output "ACR_NAME" {
     value = local.acr_name
     sensitive = false
 }
+
+output "LAW_ID" {
+    value = azurerm_log_analytics_workspace.this.workspace_id
+    sensitive = false
+}
