@@ -1,6 +1,5 @@
 locals {
   client_id = azurerm_user_assigned_identity.aca_identity.client_id
-  conn_str  = "Data Source=tcp:${local.sql_name}.database.windows.net;Initial Catalog=${local.db_name};User ID=${local.client_id};Authentication=Active Directory Managed Identity;Encrypt=True;Trust Server Certificate=False;"
 } 
 
 resource "azapi_resource" "azurerm_container_app_jobs" {
@@ -34,7 +33,7 @@ resource "azapi_resource" "azurerm_container_app_jobs" {
           replicaCompletionCount = 1
         }
         registries  = [{
-          server    = local.acr_full_name
+          server    = local.acr_fqdn
           identity  = azurerm_user_assigned_identity.aca_identity.id
         }]
       }
@@ -42,7 +41,7 @@ resource "azapi_resource" "azurerm_container_app_jobs" {
       template = {
         containers = [{
           name  = local.app_name
-          image = local.apps_image
+          image = local.app_image
           resources = {
             cpu    = 1
             memory = "2Gi"
@@ -50,6 +49,10 @@ resource "azapi_resource" "azurerm_container_app_jobs" {
           env = [{
             name  = "CONN_STR",
             value = local.conn_str
+          },
+          {
+            name  = "DB_HOST",
+            value = local.sql_fdqn
           }],
         }]
       }

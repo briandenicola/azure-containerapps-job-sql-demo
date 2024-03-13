@@ -29,7 +29,12 @@ resource "azurerm_container_app" "utils" {
       
       env {
         name  = "CONN_STR"
-        value = "Data Source=${local.sql_name}.database.windows.net; Initial Catalog=${local.sql_name}; Authentication=Active Directory Managed Identity; Encrypt=True"
+        value = local.conn_str
+      }
+
+      env {
+        name  = "DB_HOST"
+        value = local.sql_fdqn
       }
     }
   }
