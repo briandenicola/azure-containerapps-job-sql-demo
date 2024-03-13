@@ -7,6 +7,6 @@ function Resolve-HostName {
     return $ip
 }
 
-Write-Host "Resolving hostname...{0}: {1}" -f $ENV:DB_HOST, (Resolve-HostName $ENV:DB_HOST)
+Write-Host ("Resolving hostname...{0}: {1}" -f $ENV:DB_HOST, (Resolve-HostName $ENV:DB_HOST))
 Invoke-Sqlcmd -ConnectionString $ENV:CONN_STR -InputFile "/app/sample.sql"
 Invoke-Sqlcmd -ConnectionString $ENV:CONN_STR -Query "exec sp_columns todos"
