@@ -15,6 +15,7 @@ Azure SQL Database | Hosts a simple Todo Database
 Azure Container Registry | Hosts the Docker Image
 SQL Job App | A docker image with a PowerShell wrapper script that executes a simple query againist the Azure SQL Database
 Utils App | A docker image with common utilities for troubleshooting
+User Managed Identity | The identity assigned to both Container Apps and given RBAC roles within SQL Azure and Container Registry 
 
 ## Architecture Diagram
 ![Architecture](.assets/containerapps-jobs.png)
