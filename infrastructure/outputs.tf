@@ -17,3 +17,8 @@ output "LAW_ID" {
     value = azurerm_log_analytics_workspace.this.workspace_id
     sensitive = false
 }
+
+output "SQL_SERVER_NAME" {
+    value = azurerm_mssql_server.this.fully_qualified_domain_name
+    sensitive = false
+}

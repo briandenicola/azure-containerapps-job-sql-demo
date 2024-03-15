@@ -44,13 +44,17 @@ ALTER ROLE db_datawriter ADD MEMBER [${MSI_IDENTITY}]
 CREATE TABLE dbo.Todos ( [Id] INT PRIMARY KEY, [Name] VARCHAR(250) NOT NULL, [IsComplete] BIT);
 INSERT INTO todos VALUES ( 1, 'take out trash', 0)
 ```
+__Notes__: 
+* Replace `${MSI_IDENTITY}` with the Managed Identity Object ID
+* The above steps can be automated using the ./scripts/setup-sql.sh script if the default SQL admin is Service Principal and it has Directory Reader rights (https://aka.ms/sqlaadsetup).
 
 ## Validate
-__Note__: It will take about 5 minutes for the validation to complete and the logs to enter the Azure Log Analytics workspace.
 ```bash
 az login
 task validate
 ```
+__Notes__: 
+* It can take up to 5 minutes or more for the validation to complete and the logs to enter the Azure Log Analytics workspace.
 
 ### Example Run
 ```bash
