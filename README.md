@@ -23,9 +23,10 @@ Utils App | A docker image with common utilities for troubleshooting
 
 ### Prerequisite
 * Azure Subscription with Owner access permissions 
-* [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
-* [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
-* [Task](https://taskfile.dev/#/installation)
+* Use DevContainers, which has all the required tooling, or install the following:
+    * [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli)
+    * [Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+    * [Task](https://taskfile.dev/#/installation)
 
 ### Automated Steps
 ```bash
