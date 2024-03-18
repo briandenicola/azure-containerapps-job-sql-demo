@@ -17,5 +17,5 @@ locals {
   db_name               = "todo"
   conn_str              = "Data Source=tcp:${local.sql_fdqn};Initial Catalog=${local.db_name};User ID=${local.client_id};Authentication=Active Directory Managed Identity;Encrypt=True;Trust Server Certificate=False;"
 
-  utils_image           = "bjd145/utils:3.15"
+  utils_image           = "bjd145/utils:3.17"
 }
