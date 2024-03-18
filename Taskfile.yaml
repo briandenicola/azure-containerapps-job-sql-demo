@@ -1,6 +1,7 @@
 version: '3'
 
-#env:
+env:
+  FIREWALL: true
   
 tasks:
   up:
@@ -15,7 +16,7 @@ tasks:
 
   apply: 
     cmds:
-    - terraform -chdir=./infrastructure apply -auto-approve -var "region={{.REGION}}"
+    - terraform -chdir=./infrastructure apply -auto-approve -var "region={{.REGION}}" -var "deploy_firewall={{.FIREWALL}}"
     vars:
       REGION: '{{default "southcentralus" .CLI_ARGS}}'
 
