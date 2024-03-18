@@ -38,11 +38,17 @@ tasks:
     - terraform -chdir=./app workspace select {{.APP_NAME}}
     - terraform -chdir=./app init
     - terraform -chdir=./app apply -auto-approve -var "app_name={{.APP_NAME}}"  -var "commit={{.COMMIT_HASH}}"
+
     vars:
       APP_NAME: 
         sh: terraform -chdir=./infrastructure output -raw APP_NAME
       COMMIT_HASH:
         sh: git rev-parse HEAD | head -c 8
+  
+  sql:
+    desc: Setups SQL Server with correct access
+    cmds:
+    - bash ./scripts/setup-sql.sh
 
   validate:
     desc: Executes the job and displays the logs

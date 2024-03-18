@@ -48,6 +48,7 @@ INSERT INTO todos VALUES ( 1, 'take out trash', 0)
 __Notes__: 
 * Replace `${MSI_IDENTITY}` with the Managed Identity Object ID
 * The above steps can be automated using the ./scripts/setup-sql.sh script.  The script will set the current logged in user as the default admin of the SQL Server.
+* `task sql` can now be used to run the above SQL commands
 
 ## Validate
 ```bash
