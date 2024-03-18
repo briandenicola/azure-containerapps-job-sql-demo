@@ -44,6 +44,24 @@ resource "azurerm_firewall_policy_rule_collection_group" "this" {
     name     = "default_rules_collection"
     priority = 500
     action   = "Allow"
+    #
+    #Required for KEDA/Dapr integrations
+    # rule {
+    #   name = "microsoft-container-registry"
+    #   protocols {
+    #     type = "Https"
+    #     port = 443
+    #   }
+    #   source_addresses = [
+    #     "*"
+    #   ]
+    #   destination_fqdns = [
+    #     "mcr.microsoft.com",
+    #     "*.data.mcr.microsoft.com",
+    #     "*.blob.core.windows.net"
+    #   ]
+    # }
+    #
     rule {
       name = "docker"
       protocols {
@@ -70,9 +88,12 @@ resource "azurerm_firewall_policy_rule_collection_group" "this" {
         "*"
       ]
       destination_fqdns = [
+        "*.identity.azure.net",
         "management.microsoft.com",
         "login.microsoftonline.com",
+        "*.login.microsoftonline.com",
         "login.windows.net",
+        "login.microsoft.com",
         "sts.windows.net"
       ]
     }
