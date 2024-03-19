@@ -62,6 +62,8 @@ resource "azurerm_firewall_policy_rule_collection_group" "this" {
     #   ]
     # }
     #
+
+    # Allows access to bjd145/utils container
     rule {
       name = "docker"
       protocols {
@@ -78,6 +80,24 @@ resource "azurerm_firewall_policy_rule_collection_group" "this" {
         "download.docker.com"
       ]
     }
+
+    # Allows access to github (optional)
+    rule {
+      name = "github"
+      protocols {
+        type = "Https"
+        port = 443
+      }
+      source_addresses = [
+        "*"
+      ]
+      destination_fqdns = [
+        "github.com",
+        "raw.githubusercontent.com"
+      ]
+    }
+
+    # Required for Azure AD and Azure Management
     rule {
       name = "azure-management"
       protocols {
