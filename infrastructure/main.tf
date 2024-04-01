@@ -27,10 +27,11 @@ resource "random_integer" "vnet_cidr" {
 locals {
   location              = var.region
   resource_name         = "${random_pet.this.id}-${random_id.this.dec}"
+  rg_name               = "${local.resource_name}_rg"
   aca_name              = "${local.resource_name}-env"
   sql_name              = "${local.resource_name}-sql"
-  fw_name              = "${local.resource_name}-fw"
-  acr_name              = "${replace(local.resource_name,"-","")}acr"
+  fw_name               = "${local.resource_name}-fw"
+  acr_name              = "${replace(local.resource_name, "-", "")}acr"
   workload_profile_name = "Consumption"
   vnet_cidr             = cidrsubnet("10.0.0.0/8", 8, random_integer.vnet_cidr.result)
   pe_subnet_cidir       = cidrsubnet(local.vnet_cidr, 8, 1)
@@ -41,7 +42,7 @@ locals {
 }
 
 resource "azurerm_resource_group" "this" {
-  name     = "${local.resource_name}_rg"
+  name     = local.rg_name
   location = local.location
 
   tags = {
@@ -49,4 +50,16 @@ resource "azurerm_resource_group" "this" {
     Components  = "Container Apps; Azure SQL"
     DeployedOn  = timestamp()
   }
+}
+
+module "firewall" {
+  depends_on = [ 
+    azurerm_subnet.firewall
+  ]
+  
+  count     = var.deploy_firewall ? 1 : 0
+  source    = "./firewall"
+  app_name  = local.resource_name
+  region    = local.location
+  rg_name   = local.rg_name
 }

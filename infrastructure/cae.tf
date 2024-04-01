@@ -1,6 +1,7 @@
 resource "azapi_resource" "azurerm_container_app_environment" {
   depends_on = [
-    azapi_update_resource.nodes_delegation
+    azapi_update_resource.nodes_delegation,
+    module.firewall
   ]
 
   type      = "Microsoft.App/managedEnvironments@2023-04-01-preview"
