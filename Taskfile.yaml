@@ -1,24 +1,30 @@
 version: '3'
 
 env:
+  TITLE: Azure Container Apps Job Demo with Azure SQL
+  DEFAULT_REGION: canadaeast
   FIREWALL: true
   
 tasks:
+  default:
+    cmds:
+    - task --list 
+
   up:
-    desc: Creates Azure infrastructure and deploys application code
+    desc: Creates the {{.TITLE}} environment and deploys code
     cmds:
     - terraform -chdir=./infrastructure workspace new {{.REGION}} || true
     - terraform -chdir=./infrastructure workspace select {{.REGION}}
     - terraform -chdir=./infrastructure init
     - task: apply
     vars:
-      REGION: '{{default "southcentralus" .CLI_ARGS}}'
+      REGION: '{{default {{.DEFAULT_REGION}} .CLI_ARGS}}'
 
   apply: 
     cmds:
-    - terraform -chdir=./infrastructure apply -auto-approve -var "region={{.REGION}}" -var "deploy_firewall={{.FIREWALL}}"
+    - terraform -chdir=./infrastructure apply -auto-approve -var "region={{.REGION}}" -var "deploy_firewall={{.FIREWALL}}" -var "tags={{.TITLE}}"
     vars:
-      REGION: '{{default "southcentralus" .CLI_ARGS}}'
+      REGION: '{{default {{.DEFAULT_REGION}} .CLI_ARGS}}'
 
   build:
     desc: Builds application code with Docker
@@ -38,7 +44,6 @@ tasks:
     - terraform -chdir=./app workspace select {{.APP_NAME}}
     - terraform -chdir=./app init
     - terraform -chdir=./app apply -auto-approve -var "app_name={{.APP_NAME}}"  -var "commit={{.COMMIT_HASH}}"
-
     vars:
       APP_NAME: 
         sh: terraform -chdir=./infrastructure output -raw APP_NAME
@@ -71,7 +76,7 @@ tasks:
   down:
     desc: Destroys all Azure resources and cleans up Terraform
     cmds:
-    - az group list --tag Application="Azure Container Apps Job Demo with Azure SQL" --query "[].name" -o tsv | xargs -ot -n 1 az group delete -y --no-wait -n
+    - az group list --tag Application={{.TITLE}} --query "[].name" -o tsv | xargs -ot -n 1 az group delete -y --no-wait -n
     - cd ./app; rm -rf terraform.tfstate.d .terraform.lock.hcl .terraform terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info
     - cd ./infrastructure; rm -rf terraform.tfstate.d .terraform.lock.hcl .terraform terraform.tfstate terraform.tfstate.backup .terraform.tfstate.lock.info
 

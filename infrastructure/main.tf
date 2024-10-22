@@ -1,10 +1,3 @@
-data "azurerm_client_config" "current" {}
-data "azurerm_subscription" "current" {}
-
-data "http" "myip" {
-  url = "http://checkip.amazonaws.com/"
-}
-
 resource "random_id" "this" {
   byte_length = 2
 }
@@ -38,28 +31,5 @@ locals {
   compute_subnet_cidir  = cidrsubnet(local.vnet_cidr, 8, 2)
   nodes_subnet_cidir    = cidrsubnet(local.vnet_cidr, 4, 2)
   fw_subnet_cidir       = cidrsubnet(local.vnet_cidr, 8, 3)
-  tags                  = "Azure Container Apps Job Demo with Azure SQL"
-}
-
-resource "azurerm_resource_group" "this" {
-  name     = local.rg_name
-  location = local.location
-
-  tags = {
-    Application = local.tags
-    Components  = "Container Apps; Azure SQL"
-    DeployedOn  = timestamp()
-  }
-}
-
-module "firewall" {
-  depends_on = [ 
-    azurerm_subnet.firewall
-  ]
-  
-  count     = var.deploy_firewall ? 1 : 0
-  source    = "./firewall"
-  app_name  = local.resource_name
-  region    = local.location
-  rg_name   = local.rg_name
+  tags                  = var.tags
 }

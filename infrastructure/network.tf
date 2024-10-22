@@ -26,7 +26,7 @@ resource "azurerm_subnet" "nodes" {
 }
 
 resource "azapi_update_resource" "nodes_delegation" {
-  depends_on = [ 
+  depends_on = [
     azurerm_virtual_network.this,
     azurerm_subnet.compute,
     azurerm_subnet.nodes,
@@ -35,9 +35,9 @@ resource "azapi_update_resource" "nodes_delegation" {
 
   type        = "Microsoft.Network/virtualNetworks/subnets@2023-04-01"
   resource_id = azurerm_subnet.nodes.id
-  
+
   body = jsonencode({
-    properties= {
+    properties = {
       delegations = [{
         name = "Microsoft.App.environment"
 
@@ -46,7 +46,7 @@ resource "azapi_update_resource" "nodes_delegation" {
           actions = [
             "Microsoft.Network/virtualNetworks/subnets/join/action"
           ]
-        }      
+        }
       }]
     }
   })
@@ -64,7 +64,7 @@ resource "azurerm_subnet" "compute" {
   resource_group_name                           = azurerm_resource_group.this.name
   virtual_network_name                          = azurerm_virtual_network.this.name
   address_prefixes                              = [local.compute_subnet_cidir]
-  private_endpoint_network_policies_enabled     = false
+  private_endpoint_network_policies             = "Enabled"
   private_link_service_network_policies_enabled = false
 }
 
